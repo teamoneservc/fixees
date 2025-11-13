@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Fixees - Book trusted home and personal services across India, from plumbing to therapy, with vetted professionals.">
+  <meta name="keywords" content="home services, professional services, India, plumbing, cleaning, pest control, carpentry, salon, AC repair, painting">
+  <meta name="author" content="Fixees Team">
+  <meta name="robots" content="index, follow">
+  <title>Fixees - Professional Service Marketplace (India)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <link rel="stylesheet" href="styles.css">
+  <!-- Firebase CDN (compat mode for v12.4.0) -->
+   <style>
+    .hero-bg {
+      background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2071&q=80');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+   </style>
+  <script src="https://www.gstatic.com/firebasejs/12.4.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/12.4.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/12.4.0/firebase-database-compat.js"></script>
+  <script>
+    // Firebase Configuration (keep init here, but move listener to app.js)
+    const firebaseConfig = {
+      apiKey: "AIzaSyDbCpfja4Ly7kjNNNqy1L7i81CeAFtCDzU",
+      authDomain: "oneserviice-d0270.firebaseapp.com",
+      databaseURL: "https://oneserviice-d0270-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "oneserviice-d0270",
+      storageBucket: "oneserviice-d0270.firebasestorage.app",
+      messagingSenderId: "591308815657",
+      appId: "1:591308815657:web:aacb2188b2b94c92d24b38",
+      measurementId: "G-K3KKG8R8KN"
+    };
+    // Initialize Firebase
+    window.firebaseApp = firebase.initializeApp(firebaseConfig);
+    window.auth = firebase.auth();
+    window.realtimeDb = firebase.database();
+    // Expose Firebase auth functions to the global window object
+    window.signInWithEmailAndPassword = (email, password) => window.auth.signInWithEmailAndPassword(email, password);
+    window.createUserWithEmailAndPassword = (email, password) => window.auth.createUserWithEmailAndPassword(email, password);
+    window.updateProfile = (user, profile) => user.updateProfile(profile);
+    window.signOut = () => window.auth.signOut();
+    window.signInAnonymously = () => window.auth.signInAnonymously();
+  </script>
+</head>
+<body class="min-h-screen flex flex-col">
+  <header class="bg-white shadow-lg sticky top-0 z-40">
+    <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center" aria-label="Main navigation">
+      <h1 class="text-3xl font-extrabold text-blue-600">Fixees</h1>
+      <div class="hidden md:flex space-x-8 text-gray-700 font-medium">
+        <a href="#" class="hover:text-blue-600 transition duration-150 text-lg" onclick="navigateTo('home')" aria-label="Home page">Home</a>
+        <a href="#" class="hover:text-blue-600 transition duration-150 text-lg" onclick="navigateTo('listings')" aria-label="Services page">Services</a>
+        <a href="#" class="hover:text-blue-600 transition duration-150 text-lg" onclick="navigateTo('howitworks')" aria-label="How it works page">Service Flow</a>
+        <a href="#" class="hover:text-blue-600 transition duration-150 text-lg" onclick="navigateTo('testimonials')" aria-label="Customer reviews page">Reviews</a>
+        <a href="#" class="hover:text-blue-600 transition duration-150 text-lg" onclick="handleAuthClick()" aria-label="Your order page">Your Order</a>
+        <a href="#" class="hover:text-blue-600 transition duration-150 text-lg" onclick="navigateTo('about')" aria-label="About us page">About Us</a>
+        <a href="#" class="hover:text-blue-600 transition duration-150 text-lg" onclick="navigateTo('faq')" aria-label="Help and FAQ page">Help & FAQ</a>
+        <button id="auth-button" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition duration-150 font-semibold text-lg" onclick="handleAuthClick()" aria-label="User panel">User Panel</button>
+      </div>
+      <button id="mobile-menu-button" class="md:hidden p-2 rounded-md text-gray-700 hover:bg-gray-100" aria-label="Toggle mobile menu" aria-expanded="false">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+      </button>
+    </nav>
+    <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-100" role="menu">
+      <a href="#" class="block px-4 py-3 text-gray-700 hover:bg-gray-50 text-lg" onclick="navigateTo('home'); toggleMobileMenu()" role="menuitem">Home</a>
+      <a href="#" class="block px-4 py-3 text-gray-700 hover:bg-gray-50 text-lg" onclick="navigateTo('listings'); toggleMobileMenu()" role="menuitem">Services</a>
+      <a href="#" class="block px-4 py-3 text-gray-700 hover:bg-gray-50 text-lg" onclick="navigateTo('howitworks'); toggleMobileMenu()" role="menuitem">Service Flow</a>
+      <a href="#" class="block px-4 py-3 text-gray-700 hover:bg-gray-50 text-lg" onclick="navigateTo('testimonials'); toggleMobileMenu()" role="menuitem">Reviews</a>
+      <a href="#" class="block px-4 py-3 text-gray-700 hover:bg-gray-50 text-lg" onclick="handleAuthClick(); toggleMobileMenu()" role="menuitem">Your Order</a>
+      <a href="#" class="block px-4 py-3 text-gray-700 hover:bg-gray-50 text-lg" onclick="navigateTo('about'); toggleMobileMenu()" role="menuitem">About Us</a>
+      <a href="#" class="block px-4 py-3 text-gray-700 hover:bg-gray-50 text-lg" onclick="navigateTo('faq'); toggleMobileMenu()" role="menuitem">Help & FAQ</a>
+      <button class="w-full text-left px-4 py-3 text-gray-700 hover:bg-gray-50 text-lg" onclick="toggleMobileMenu(); handleAuthClick()" role="menuitem">User Panel</button>
+    </div>
+  </header>
+  <main id="app-container" class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8"></main>
+  <footer class="bg-gray-900 text-white mt-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+        <div class="md:col-span-2">
+          <h3 class="text-2xl font-bold mb-4 text-blue-400">Fixees</h3>
+          <p class="text-gray-300 mb-4 leading-relaxed">Connecting you with the best local professionals across India. From plumbing to therapy, we make home services simple, reliable, and affordable.</p>
+          <div class="flex space-x-4">
+            <a href="#" class="text-gray-400 hover:text-blue-400 transition duration-150"><i class="fab fa-facebook-f text-xl"></i></a>
+            <a href="#" class="text-gray-400 hover:text-blue-400 transition duration-150"><i class="fab fa-twitter text-xl"></i></a>
+            <a href="#" class="text-gray-400 hover:text-blue-400 transition duration-150"><i class="fab fa-instagram text-xl"></i></a>
+            <a href="#" class="text-gray-400 hover:text-blue-400 transition duration-150"><i class="fab fa-linkedin-in text-xl"></i></a>
+          </div>
+        </div>
+        <div>
+          <h4 class="text-lg font-semibold mb-4">Quick Links</h4>
+          <ul class="space-y-2 text-sm">
+            <li><a href="#" onclick="navigateTo('home')" class="text-gray-300 hover:text-blue-400 transition duration-150">Home</a></li>
+            <li><a href="#" onclick="navigateTo('listings')" class="text-gray-300 hover:text-blue-400 transition duration-150">Services</a></li>
+            <li><a href="#" onclick="navigateTo('howitworks')" class="text-gray-300 hover:text-blue-400 transition duration-150">Service Flow</a></li>
+            <li><a href="#" onclick="navigateTo('about')" class="text-gray-300 hover:text-blue-400 transition duration-150">About Us</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="text-lg font-semibold mb-4">Support</h4>
+          <ul class="space-y-2 text-sm">
+            <li><a href="#" onclick="navigateTo('faq')" class="text-gray-300 hover:text-blue-400 transition duration-150">Help & FAQ</a></li>
+            <li><a href="#" onclick="navigateTo('contact')" class="text-gray-300 hover:text-blue-400 transition duration-150">Contact Us</a></li>
+            <li><a href="#" class="text-gray-300 hover:text-blue-400 transition duration-150">Privacy Policy</a></li>
+            <li><a href="#" class="text-gray-300 hover:text-blue-400 transition duration-150">Terms of Service</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="border-t border-gray-700 pt-8 mb-8">
+        <h4 class="text-lg font-semibold mb-4">Get in Touch</h4>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
+          <div>
+            <p class="text-gray-300 mb-2"><i class="fas fa-phone mr-2"></i> +91-8882648433</p>
+            <p class="text-gray-300"><i class="fas fa-envelope mr-2"></i> team.fixees@gmail.com</p>
+          </div>
+          <div>
+            <p class="text-gray-300 mb-2"><i class="fas fa-map-marker-alt mr-2"></i> NCR, Delhi</p>
+            <p class="text-gray-300">Will expand in other cities soon</p>
+          </div>
+          <div>
+            <p class="text-gray-300 mb-2">Mon-Sun: 9AM - 9PM IST</p>
+          </div>
+        </div>
+      </div>
+      <div class="text-center border-t border-gray-700 pt-6">
+        <p>&copy; 2025 Fixees. All rights reserved.</p>
+        <p class="text-sm text-gray-400 mt-2">Designed with love for Indian homes</p>
+      </div>
+    </div>
+  </footer>
+  <div id="modal-container" class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 z-50 flex items-center justify-center p-4">
+    <div id="modal-content" class="bg-white p-6 rounded-xl shadow-2xl max-w-sm w-full">
+      <h3 id="modal-title" class="text-xl font-semibold mb-3 text-gray-900"></h3>
+      <p id="modal-body" class="text-gray-600 mb-6"></p>
+      <div class="flex justify-end space-x-3">
+        <button id="modal-cancel" class="px-4 py-2 text-sm text-gray-600 rounded-lg hover:bg-gray-100 transition duration-150 hidden">Cancel</button>
+        <button id="modal-confirm" class="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-150">OK</button>
+      </div>
+    </div>
+  </div>
+  <script src="app.js" defer></script>
+</body>
+</html>
